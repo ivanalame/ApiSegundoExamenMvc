@@ -11,6 +11,7 @@ using ApiSegundoExamenMvc.Repositories;
 using ApiSegundoExamenMvc.Data;
 using Microsoft.Extensions.Azure;
 using Azure.Security.KeyVault.Secrets;
+using Azure.Storage.Blobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+string azurKeys = builder.Configuration.GetValue<string>("AzureKeys:StorageAccount");
+BlobServiceClient blobServiceClient = new BlobServiceClient(azurKeys);
+builder.Services.AddTransient<BlobServiceClient>(x => blobServiceClient);
 
 
 builder.Services.AddOpenApiDocument(document =>

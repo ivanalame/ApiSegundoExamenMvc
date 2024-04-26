@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 
 namespace ApiSegundoExamenMvc.Helpers
 {
@@ -21,40 +22,40 @@ namespace ApiSegundoExamenMvc.Helpers
         public HelperActionServicesOAuth(IConfiguration configuration)
 
         {
-            // var keyVaultUri = configuration.GetValue<string>("ApiOauth:KeyVaultUri");
-            //var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
+             var keyVaultUri = configuration.GetValue<string>("ApiOauth:KeyVaultUri");
+            var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
 
-            this.Issuer =
+            //this.Issuer =
 
-                configuration.GetValue<string>("ApiOAuth:Issuer");
+            //    configuration.GetValue<string>("ApiOAuth:Issuer");
 
-            this.Audience =
+            //this.Audience =
 
-                configuration.GetValue<string>("ApiOAuth:Audience");
+            //    configuration.GetValue<string>("ApiOAuth:Audience");
 
-            this.SecretKey =
+            //this.SecretKey =
 
-                configuration.GetValue<string>("ApiOAuth:SecretKey");
+            //    configuration.GetValue<string>("ApiOAuth:SecretKey");
 
-            //Issuer = GetSecretValue(secretClient, "secretoIssuer");
-            //Audience = GetSecretValue(secretClient, "secretoAudience");
-            //SecretKey = GetSecretValue(secretClient, "secretoSecretKey");
+            Issuer = getsecretvalue(secretClient, "secretoIssuer");
+            Audience = getsecretvalue(secretClient, "secretoAudience");
+            SecretKey = getsecretvalue(secretClient, "secretoSecretKey");
 
         }
 
-        //private string GetSecretValue(SecretClient secretClient, string secretName)
-        //{
-        //    try
-        //    {
-        //        KeyVaultSecret secret = secretClient.GetSecret(secretName);
-        //        return secret.Value;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Maneja la excepción según sea necesario
-        //        throw new Exception($"No se pudo obtener el secreto '{secretName}' del Key Vault.", ex);
-        //    }
-        //}
+        private string getsecretvalue(SecretClient secretclient, string secretname)
+        {
+            try
+            {
+                KeyVaultSecret secret = secretclient.GetSecret(secretname);
+                return secret.Value;
+            }
+            catch (Exception ex)
+            {
+                // maneja la excepción según sea necesario
+                throw new Exception($"no se pudo obtener el secreto '{secretname}' del key vault.", ex);
+            }
+        }
 
 
         //NECESITAMOS UN METODO PARA GENERAR EL TOKEN  
@@ -79,13 +80,6 @@ namespace ApiSegundoExamenMvc.Helpers
 
 
 
-        //HEMOS CREADO ESTA CLASE PARA QUITAR CODIGO DENTRO  
-
-        //DE PROGRAM EN LOS SERVICES. 
-
-        //METODO PARA LA CONFIGURACION DE LA VALIDACION 
-
-        //DEL TOKEN 
 
         public Action<JwtBearerOptions> GetJwtBearerOptions()
 

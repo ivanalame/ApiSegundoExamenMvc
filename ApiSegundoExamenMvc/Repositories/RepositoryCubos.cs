@@ -1,5 +1,6 @@
 ﻿using ApiSegundoExamenMvc.Data;
 using ApiSegundoExamenMvc.Models;
+using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 
@@ -8,6 +9,7 @@ namespace ApiSegundoExamenMvc.Repositories
     public class RepositoryCubos
     {
         private CubosContext context;
+        private BlobServiceClient client;
 
         public RepositoryCubos(CubosContext context)
         {
@@ -67,6 +69,12 @@ namespace ApiSegundoExamenMvc.Repositories
         public async Task<Usuario>LogInUsuarioAsync(string email,string password)
         {
             return await this.context.Usuarios.Where(x=>x.Email == email && x.Password == password).FirstOrDefaultAsync();
+        }
+
+        public async Task<string> GetContainerPathAsync()
+        {
+            BlobContainerClient containerClient = this.client.GetBlobContainerClient("containerexam");
+            return containerClient.Uri.ToString();
         }
     }
 }

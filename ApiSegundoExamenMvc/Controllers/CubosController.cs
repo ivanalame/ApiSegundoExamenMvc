@@ -46,6 +46,8 @@ namespace ApiSegundoExamenMvc.Controllers
             Claim claim = HttpContext.User.FindFirst(x => x.Type == "UserData");
             string jsonUsuario = claim.Value;
             Usuario usuario = JsonConvert.DeserializeObject<Usuario>(jsonUsuario);
+            string ruta = await this.repo.GetContainerPathAsync();
+            usuario.Imagen = ruta + "/" + usuario.Imagen;
             return usuario;
         }
         [Authorize]
